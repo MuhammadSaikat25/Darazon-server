@@ -12,4 +12,5 @@ router.post(
 );
 router.post("/singIn", userController.logInUser);
 router.get("/get-all-user", userController.getAllUser);
+
 export const userRoute = router;

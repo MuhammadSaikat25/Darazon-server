@@ -9,7 +9,7 @@ const userSchema = new Schema<TUser>(
     role: {
       type: String,
       enum: ["admin", "seller", "user"],
-      required: true,
+      default: "user",
     },
     email: {
       type: String,
@@ -24,7 +24,6 @@ const userSchema = new Schema<TUser>(
     },
     password: {
       type: String,
-      required: true,
     },
     avatar: {
       type: String,
@@ -33,10 +32,10 @@ const userSchema = new Schema<TUser>(
   { timestamps: true }
 );
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    return next();
+  if (this.isModified("password") && this.password) {
+    this.password = await bcrypt.hash(this.password, 10);
   }
-  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
+
 export const UserModel = model("user", userSchema);

@@ -4,6 +4,7 @@ import cors from "cors";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import notFound from "./app/middlewares/notFound";
 import { userRoute } from "./app/modules/users/user.route";
+import { sellerRoute } from "./app/modules/seller/seller.route";
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -20,7 +21,7 @@ app.use(
 app.get("/", (_, res) => {
   res.send("welcome to Darazon .");
 });
-app.use("/api/v1", userRoute);
+app.use("/api/v1", userRoute, sellerRoute);
 
 app.use(globalErrorHandler);
 app.use(notFound);

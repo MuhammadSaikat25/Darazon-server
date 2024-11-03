@@ -3,7 +3,6 @@ import { UserModel } from "./user.model";
 import AppError from "../../error/AppError";
 import httpStatus from "http-status";
 import jwt from "jsonwebtoken";
-import config from "../../config";
 
 const createUser = async (playLoad: any) => {
   const result = await UserModel.create(playLoad);
@@ -11,28 +10,34 @@ const createUser = async (playLoad: any) => {
 };
 
 const loginUser = async (playLoad: any) => {
-  const userExist = await UserModel.findOne({ email: playLoad.email });
-  if (!userExist) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found");
-  }
-  const comparePassword = await bcrypt.compare(
-    playLoad.password,
-    userExist.password
-  );
-  if (!comparePassword) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  const user = await UserModel.findOne({ email: playLoad.email });
+  if (!user) {
+    throw Error("User not found");
   }
 
+  const checkingPassword = await bcrypt.compare(
+    playLoad.password as string,
+    user?.password as string
+  );
+
+  if (checkingPassword == false) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Password does not match");
+  }
   const jwtPlayLoad = {
-    _id: userExist._id,
-    email: userExist.email,
-    role: userExist.role,
-    name: userExist.name,
+    email: user?.email,
+    role: user?.role,
+    _id: user._id,
   };
-  const token = jwt.sign(jwtPlayLoad, config.JWT as string, {
-    expiresIn: "7d",
+  const jwtToken = jwt.sign(jwtPlayLoad, process.env.JWT as string, {
+    expiresIn: "10d",
   });
-  return token;
+  return {
+    user: {
+      role: user?.role,
+      email: user?.email,
+    },
+    jwtToken,
+  };
 };
 export const userService = {
   createUser,

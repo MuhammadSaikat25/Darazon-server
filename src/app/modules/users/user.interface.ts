@@ -1,7 +1,7 @@
 export interface TUser {
   name: string;
-  role: "admin" | "seller" | "user";
+  role?: "admin" | "seller" | "user";
   email: string;
-  password: string;
+  password?: string;
   avatar: string;
 }

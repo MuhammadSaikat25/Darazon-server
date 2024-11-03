@@ -7,10 +7,10 @@ import { UserModel } from "./user.model";
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await userService.createUser(req.body);
-
+    
     res.status(httpStatus.OK).json({
       success: true,
-      message: `${req.body.role} register successful`,
+      message: `User register successful`,
       data: result,
     });
   }
